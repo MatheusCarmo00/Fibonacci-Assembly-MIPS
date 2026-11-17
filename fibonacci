@@ -1,0 +1,78 @@
+
+.data
+msg: .asciiz "Digite um numero entre 3 e 34: "
+erro: .asciiz "Numero invalido! Tente novamente.\n"
+espaco: .asciiz " "
+quebra: .asciiz "\n"
+
+.text
+.globl main
+
+main:
+
+# Leitura e validacao de n
+entrada:
+    li $v0, 4
+    la $a0, msg
+    syscall
+
+    li $v0, 5
+    syscall
+
+    slti $t0, $v0, 3
+    bne $t0, $zero, invalido
+
+    li $t0, 35
+    bge $v0, $t0, invalido
+
+    move $s0, $v0
+
+# Inicializacao da sequencia
+    li $s1, 0
+    li $s2, 1
+
+# Geracao de Fibonacci
+loop:
+    add $s3, $s1, $s2
+
+    bgt $s3, $s0, fim
+
+# Subtracao: ultimo - penultimo
+    sub $s4, $s3, $s2
+
+# Verifica se o resultado e impar
+    rem $t0, $s4, 2
+    beq $t0, $zero, proximo
+
+# Imprime resultado impar
+    li $v0, 1
+    move $a0, $s4
+    syscall
+
+# Imprime espaco
+    li $v0, 4
+    la $a0, espaco
+    syscall
+
+# Atualiza os termos
+proximo:
+    move $s1, $s2
+    move $s2, $s3
+
+    j loop
+
+# Finalizacao
+invalido:
+    li $v0, 4
+    la $a0, erro
+    syscall
+
+    j entrada
+
+fim:
+    li $v0, 4
+    la $a0, quebra
+    syscall
+
+    li $v0, 10
+    syscall
